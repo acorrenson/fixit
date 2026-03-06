@@ -145,7 +145,7 @@ Proof.
   now apply lfp_unfold.
 Qed.
 
-Theorem opp_lfp F `{Mono F}:
+Theorem opp_lfp_intro F `{Mono F}:
   gfp (fun X => opp (F (opp X))) <= opp (lfp F).
 Proof.
   intros a (X & HX & Ha) Hcontr.
@@ -154,7 +154,7 @@ Proof.
   eapply HX; eauto.
 Qed.
 
-Theorem opp_gfp F `{Mono F}:
+Theorem opp_gfp_intro F `{Mono F}:
   lfp (fun X => opp (F (opp X))) <= opp (gfp F).
 Proof.
   intros a Hcontr (X & HX & Ha).
@@ -165,6 +165,36 @@ Proof.
   apply (is_mono X); auto.
   intros c Hc Hc'.
   now apply Hc'.
+Qed.
+
+From Stdlib Require Import Classical_Pred_Type Classical_Prop.
+
+Theorem opp_gfp_elim F `{Mono F}:
+  opp (gfp F) <= lfp (fun X => opp (F (opp X))).
+Proof.
+  intros a Ha X HX.
+  apply NNPP. intros Hcontr.
+  apply Ha.
+  exists (opp X). split; auto.
+  intros b Hb. apply NNPP.
+  intros Hcontr'.
+  apply Hb, HX, Hcontr'.
+Qed.
+
+Theorem opp_lfp_elim F `{Mono F}:
+  opp (lfp F) <= gfp (fun X => opp (F (opp X))).
+Proof.
+  intros a Ha.
+  exists (opp (lfp F)). split; auto.
+  intros b Hb Hcontr'.
+  apply Hb. intros Y HY.
+  apply HY.
+  apply (is_mono (lfp F)).
+  intros c.
+  now apply (fixpoint_induction F Y).
+  eapply is_mono; eauto. clear.
+  intros a Ha.
+  now apply NNPP.
 Qed.
 
 End Fix1.
