@@ -21,6 +21,9 @@ Definition union (X Y : A -> Prop) (a : A) : Prop :=
 Definition inter (X Y : A -> Prop) (a : A) : Prop :=
   X a /\ Y a.
 
+Definition opp (X : A -> Prop) (a : A) : Prop :=
+  ~X a.
+
 Definition mono (F : (A -> Prop) -> (A -> Prop)) : Prop :=
   forall (X Y : A -> Prop), le X Y -> le (F X) (F Y).
 
@@ -140,6 +143,28 @@ Proof.
   exists (lfp F).
   split; auto.
   now apply lfp_unfold.
+Qed.
+
+Theorem opp_lfp F `{Mono F}:
+  gfp (fun X => opp (F (opp X))) <= opp (lfp F).
+Proof.
+  intros a (X & HX & Ha) Hcontr.
+  apply (Hcontr (opp X)); auto.
+  intros b Hb Hcontr'.
+  eapply HX; eauto.
+Qed.
+
+Theorem opp_gfp F `{Mono F}:
+  lfp (fun X => opp (F (opp X))) <= opp (gfp F).
+Proof.
+  intros a Hcontr (X & HX & Ha).
+  apply (Hcontr (opp X)); auto.
+  intros b Hb Hcontr'.
+  specialize (HX b Hcontr').
+  apply Hb.
+  apply (is_mono X); auto.
+  intros c Hc Hc'.
+  now apply Hc'.
 Qed.
 
 End Fix1.
