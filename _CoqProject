@@ -1,0 +1,5 @@
+-R ./theories/ fixit
+
+./theories/fix1.v
+./theories/fix2.v
+./theories/fix3.v
